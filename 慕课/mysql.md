@@ -1,0 +1,185 @@
+# 与MySql的零距离接触
+<!-- MarkdownTOC -->
+
+- [初涉MySql](#初涉mysql)
+	- [修改msyql的命令提示符](#修改msyql的命令提示符)
+	- [MySQL常用命令](#mysql常用命令)
+	- [MySQL语句的规范](#mysql语句的规范)
+	- [创建数据库](#创建数据库)
+	- [查看当前服务器下的数据库列表](#查看当前服务器下的数据库列表)
+	- [修改数据库](#修改数据库)
+	- [删除数据库](#删除数据库)
+- [操作数据表](#操作数据表)
+	- [创建数据表](#创建数据表)
+	- [查看数据表列表](#查看数据表列表)
+	- [查看数据表的结构](#查看数据表的结构)
+	- [记录的插入与查找](#记录的插入与查找)
+	- [空值与非空](#空值与非空)
+	- [自动编号](#自动编号)
+	- [初涉主键约束\(PRIMARY KEY\)](#初涉主键约束primary-key)
+	- [初涉唯一约束](#初涉唯一约束)
+	- [默认约束 DEFAULT](#默认约束-default)
+- [约束以及修改数据表](#约束以及修改数据表)
+	- [外键约束的要求解析](#外键约束的要求解析)
+	- [编辑数据库的默认存储引擎](#编辑数据库的默认存储引擎)
+
+<!-- /MarkdownTOC -->
+
+## 初涉MySql	
+### 修改msyql的命令提示符	
+```sql
+# mysql -uroot -proot --prompt 提示符
+mysql -uroot -proot --prompt \\h  //将以主机名作为命令提示符
+```
+
+命令提示符参数说明：	
+
+| 参数 | 描述 |
+| ------------- | ------------- |
+| \D | 完整的日期 |
+| \d | 当前数据库 |
+| \h | 服务器名称 |
+| \u | 当前用户 |
+
+
+
+### MySQL常用命令
+- 显示当前服务器版本: `SELECT VERSION();`		
+- 显示当前日期时间: `SELECT NOW();`		
+- 显示当前用户： `SELECT USER();`	
+- 显示当前打开数据库： `SELECT DATABASE()`	
+
+### MySQL语句的规范
+- 关键字与函数名称全部大写		
+- 数据库名称、表名称、字段名称全部小写		
+- SQL语句必须以分号结尾		
+
+### 创建数据库 
+- `CREATE {DATABASE | SCHEMA} [IF NOT EXISTS] db_name [DEFAULT] CHARACTER SET [=] charset_name;`	
+- `SHOW CREATE DATABASE database_name`查看数据库的创建信息		
+
+### 查看当前服务器下的数据库列表	
+- `SHOW {DATABASES | SCHEMAS} [LIKE 'pattern' | WHERE expr];`	
+
+### 修改数据库	
+- `ALTER {DATABASE | SCHEMA} [db_name] [DEFAULT] CHARACTER SET [=] charset_name` 	
+
+### 删除数据库 
+- `DROP {DATABASE | SCHEMA} [IF EXISTS] db_name;`		
+
+- `SHOW WARNINGS;` 显示数据库的警告信息。		
+
+
+## 操作数据表
+- 登录mysql 		
+```shell
+mysql -uroot -proot -P3306 -h127.0.0.1 //登录mysql
+```
+
+### 创建数据表	
+
+- 语法
+
+		CREATE TABLE [IF NOT EXISTS] table_name(
+			column_name data_type,
+			...
+		) 
+
+
+- demo		
+
+		CREATE TABLE tb1(
+			username VARCHAR(20),
+			age TINYINT unsigned,
+			salary FLOAT(8,2) unsigned
+		);
+
+
+### 查看数据表列表		
+
+		SHOW TABLES [FROM db_name] [LIKE 'pattern' | WHERE expr]
+
+### 查看数据表的结构	
+		
+		SHOW COLUMNS FROM tb_name 
+
+
+### 记录的插入与查找
+- 记录插入
+
+		INSERT [INTO] tb1_name [(col_name,...)] VALUES (val,...)
+
+- 记录查找
+
+		SELECT expr, ... FROM tb1_name
+
+### 空值与非空
+- NULL, 字段值可以为空；
+- NOT NULL, 字段值不能为空。
+- demo:
+	
+		CREATE TABLE tb2(
+			username VARCHAR(20) NOT NULL,
+			age TINYINT UNSIGNED NULL
+		);
+
+### 自动编号
+- AUTO_INCREMENT 
+
+### 初涉主键约束(PRIMARY KEY)
+- 主键约束
+- 每张数据表中只能存在一个主键
+- 主键保证记录的唯一性
+- 主键自动为NOT NULL
+
+### 初涉唯一约束
+- 唯一约束
+- 唯一约束可以保证记录的唯一性
+- 唯一约束字段可以为空值(NULL)
+- 每张数据表可以存在多个唯一约束
+- demo 
+		
+		 CREATE TABLE tb5(
+    		id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    		username VARCHAR(20) NOT NULL UNIQUE KEY,
+    		age TINYINT UNSIGNED
+    	 );
+
+
+### 默认约束 DEFAULT
+- 默认值
+- 当插入记录时， 如果没有明确为字段赋值， 则自动赋予默认值。
+- demo
+		
+		CREATE TABLE tb6(
+			id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			username VARCHAR(20) NOT NULL UNIQUE KEY,
+			sex ENUM('1', '2', '3') DEFAULT '3'
+		);
+
+## 约束以及修改数据表
+
+### 外键约束的要求解析
+- **约束**
+	- 约束保证数据的完整性和一致性；
+	- 约束分为表级约束和列级约束；
+	- 约束类型包括
+		+ NOT NULL (非空约束)
+		+ PRIMARY KEY （主键约束）
+		+ UNIQUE KEY (唯一约束)
+		+ DEFAULT（默认约束）
+		+ foreign key (外键约束)
+- **外键约束的要求**
+	- 父表和子表必须使用相同的存储引擎，而且禁止使用临时表；
+	- 数据表的存储引擎只能为InnoDB。
+	- 外键列和参照列必须具有相似的数据类型。 其中数字的长度或是否有符号位必须相同；而字符的长度则可以不相同。
+	- 外键列和参照列必须创建索引。如果外键列不存在索引的话，MySQL将自动创建索引。
+
+### 编辑数据库的默认存储引擎
+- MysSQL配置文件
+		
+		default-storage-engine=INNODB
+
+
+
+
