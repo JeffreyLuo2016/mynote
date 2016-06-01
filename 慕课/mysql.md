@@ -22,6 +22,10 @@
 - [约束以及修改数据表](#约束以及修改数据表)
 	- [外键约束的要求解析](#外键约束的要求解析)
 	- [编辑数据库的默认存储引擎](#编辑数据库的默认存储引擎)
+	- [外键约束的参照操作](#外键约束的参照操作)
+	- [表级约束与列级约束](#表级约束与列级约束)
+	- [修改数据表](#修改数据表)
+		- [添加单列](#添加单列)
 
 <!-- /MarkdownTOC -->
 
@@ -180,6 +184,37 @@ mysql -uroot -proot -P3306 -h127.0.0.1 //登录mysql
 		
 		default-storage-engine=INNODB
 
+- 查询表中的索引	
 
+		show indexes from tb6;
+		show indexes from tb6\G; #加入\G 以网格的形式显示查询出来的数据 表列太多的时候使用。
+
+### 外键约束的参照操作
+1. CASCADE: 从父表删除或更新且自动删除或更新子表中匹配的行；
+2. SET NULL: 从父表删除或更新行，并设置子表中的外键列为NULL. 如果使用该选项，必须保证子表列没有指定NOT NULL;
+3. RESTRICT: 拒绝对父表的删除或更新操作；
+4. NO ACTION: 标准SQL的关键字，在MySQL与RESTRICT相同；
+
+demo 创建带外键约束参照的数据表
+
+		CREATE TABLE  user ( 
+			id SMALLINT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+		 	username VARCHAR(32), 
+		 	pid SMALLINT(10) UNSIGNED, 
+		 	FOREIGN KEY (pid) REFERENCES province (pid) ON DELETE CASCADE
+		);
+
+
+### 表级约束与列级约束
+- 对一个数据列建立的约束，称为列级约束。
+- 对多个数据列建立的约束，称为表级约束。
+- 列级约束既可以在列定义时声明，也可以在列定义后声明。
+- 表级约束只能在列定义后声明。
+
+### 修改数据表
+
+#### 添加单列
+
+		ALTER TABLE tb1_name ADD [COLUMN] col_name column_definition [FIRST | AFTER col_name]
 
 

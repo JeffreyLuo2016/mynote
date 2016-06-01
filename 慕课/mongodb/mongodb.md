@@ -28,6 +28,15 @@
 - [索引属性](#索引属性)
 - [地理位置索引](#地理位置索引)
 	- [2d索引](#2d索引)
+	- [2dsphere索引](#2dsphere索引)
+	- [索引构建情况分析](#索引构建情况分析)
+		- [mongostat](#mongostat)
+		- [profile集合](#profile集合)
+		- [日志](#日志)
+		- [explain\(\)](#explain)
+- [MongoDB安全楔子](#mongodb安全楔子)
+	- [MongoDB安全概览](#mongodb安全概览)
+	- [开启权限认证](#开启权限认证)
 
 <!-- /MarkdownTOC -->
 ## 基本知识
@@ -324,6 +333,64 @@ db.runCommand(
 ```
 
 
+### 2dsphere索引
+概念： 球面地理位置索引		
+创建方式： `db.collection.ensureIndex({w:"2dsphere"})`		
+位置表示方式：		
+GeoJSON: 描述一个点，一条直线，多边形等形状。		
+格式：	
+`{type: "", coordinates:[<coordinates>]}`		
+
+查询方式与2d索引查询方式类似，支持`$minDistance`与`$maxDistance`		
+
+
+### 索引构建情况分析
+- 索引好处：加快索引相关的查询。
+- 索引不好处：增加磁盘空间消耗，降低写入性能。
+
+#### mongostat 
+- mongostat:查看mongodb运行状态的程序。	
+- 使用说明：mongostat -h 127.0.0.1:12345
+- 字段说明：
+- 索引情况：idx miss
+
+demo:	
+```sh
+./bin/mongostat -h 127.0.0.1:12345 #查看mongodb的运行情况
+```
+
+
+#### profile集合
+```js
+db.getProfilingStatus() //查看prorile状态
+db.getProfilingLevel() //
+
+db.setProfilingLevel(2) //设置profile级别 设置后会自动生成system.profile表
+db.system.profile.find().sort({$natural:-1}).limit(1)//在profile上作查询
+
+```
+
+#### 日志
+- 在conf/mongod.conf 中加入verbose = vvvvv 让mongodb记录详细的日志v越多越详细
+
+#### explain()
+
+```sh
+db.imooc_2.find({x:1}).explain() #显示查询是否使用索引等信息
+```
+
+
+## MongoDB安全楔子
+
+### MongoDB安全概览
+- 最安全的是物理隔离：不现实
+- 网络隔离其次
+- 防火墙再其次
+- 用户名密码在最后
+
+### 开启权限认证
+1. auth开启
+2. keyfile开启
 
 
 
