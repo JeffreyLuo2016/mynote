@@ -37,6 +37,8 @@
 - [MongoDB安全楔子](#mongodb安全楔子)
 	- [MongoDB安全概览](#mongodb安全概览)
 	- [开启权限认证](#开启权限认证)
+	- [MongoDB 创建用户](#mongodb-创建用户)
+	- [MongoDB 用户角色](#mongodb-用户角色)
 
 <!-- /MarkdownTOC -->
 ## 基本知识
@@ -390,7 +392,33 @@ db.imooc_2.find({x:1}).explain() #显示查询是否使用索引等信息
 
 ### 开启权限认证
 1. auth开启
+```sh
+ps -ef | grep mongod | grep 12345 #查询正在运行的mongodb进程
+kill <进程号> #杀掉mongodb进程
+
+vim conf/mongod.conf #打开配置文件
+auth = true #在打开的配置文件中加入这句即可开启权限认证
+```
+
+
 2. keyfile开启
 
+### MongoDB 创建用户
+- 创建语法: createUser (2.6之前为addUser)
+- `{user:"<name>",pwd:"<cleartext password>", customData:{<any infomation>}, roles:[{role:"<role>", db:"<database>"}]}`
+- 角色类型：内建类型(read, readWrite, dbAdmin, dbOwner, userAdmin)
+
+demo: 		
+	
+	db.createUser({user:"imooc",pwd:"imooc",roles:[{role:"userAdmin",db:"admin"},{role:"read",db:"test"}]})
+
+
+### MongoDB 用户角色
+1. 数据库角色(read, readWrite, dbAdmin, dbOwner, userAdmin)
+2. 集群角色(clusterAdmin, clusterManager...)
+3. 备份角色(backup, restore...)
+4. 其他特殊权限(DBAdminAnyDatabase...)
+
+mongoDB 可以自己创建角色
 
 

@@ -26,6 +26,17 @@
 	- [表级约束与列级约束](#表级约束与列级约束)
 	- [修改数据表](#修改数据表)
 		- [添加单列](#添加单列)
+		- [添加多列](#添加多列)
+		- [删除列](#删除列)
+		- [添加约束](#添加约束)
+			- [添加主键约束](#添加主键约束)
+			- [添加唯一约束](#添加唯一约束)
+			- [添加外键约束](#添加外键约束)
+			- [添加/删除默认约束](#添加删除默认约束)
+			- [删除主键约束](#删除主键约束)
+			- [删除唯一约束](#删除唯一约束)
+			- [删除外键约束](#删除外键约束)
+		- [修改列定义](#修改列定义)
 
 <!-- /MarkdownTOC -->
 
@@ -215,6 +226,91 @@ demo 创建带外键约束参照的数据表
 
 #### 添加单列
 
-		ALTER TABLE tb1_name ADD [COLUMN] col_name column_definition [FIRST | AFTER col_name]
+	ALTER TABLE tb1_name ADD [COLUMN] col_name column_definition [FIRST | AFTER col_name]
+
+demo 
+
+	alter table user add age smallint not null default 10; #给user表添加age列
+	alter table user add password varchar(20) not null after username; #在user表的username列后添加password列
+	alter table user add truename  varchar(20) not null first; #在所有列的前面插入truename列
+
+
+#### 添加多列
+
+	ALTER TABLE tbl_name ADD [COLUMN] (col_name column_definition,...) #添加多列时只能添加到原有列后面，不能指定位置关系
+
+#### 删除列
+
+	ALTER TABLE tbl_name DROP [COLUMN] column_name
+
+demo:
+
+	 alter table user drop truename; #删除user表的truename列
+	 alter table user drop password,drop age; #同时删除password和age列
+	 #可以同时对列进行删除和添加，用','隔开
+
+#### 添加约束
+##### 添加主键约束
+
+	ALTER TABLE tbl_name ADD [CONSTRAINT [symbol]] PRIMARY KEY [index_type] (index_col_name,...)
+
+demo 
+	
+	alter table user2 add constraint PK_user2_id primary key (id); #将id设置为名称为PK_user2_id的主键
+
+##### 添加唯一约束
+
+	ALTER TABLE tbl_name ADD [CONSTRAINT[SYMBOL]] UNIQUE [INDEX|KEY] [index_name] [index_type] (index_col_name,...)
+
+demo 
+	
+	alter table user2 add unique (username); #为user2的username添加唯一约束
+
+##### 添加外键约束
+
+	ALTER TABLE tbl_name ADD [CONSTRAINT[symbol]] FOREIGN KEY [index_name](index_col_name,...) reference_difinition
+
+demo 
+
+	alter table user2 add foreign key (pid) references province (pid); #给user2表的pid字段添加外键约束，外键为province表的pid字段。
+
+##### 添加/删除默认约束
+
+	ALTER TABLE tbl_name ALTER	[COLUMN] col_name {SET DEFAULT literal | DROP DEAULT}
+
+demo 
+	
+	alter table user2 alter age set default 15; #为user2表的age字段添加默认值15
+	alter table user2 alter age drop default; #去掉user2表的age字段的默认值
+
+##### 删除主键约束
+
+	ALTER TABLE tbl_name DROP PRIMARY KEY;
+
+demo 	
+
+	alter table user2 drop primary key; #删除user2表的主键
+
+##### 删除唯一约束
+
+	ALTER TABLE tbl_name DROP {INDEX|KEY} index_name
+
+demo:		
+	
+	show indexes from user2\G; #查看表上的约束
+	alter table user2 drop index username; #删除名称为username的唯一约束
+
+##### 删除外键约束
+
+	ALTER TABLE tbl_name DROP FOREIGN KEY fk_symbol
+
+demo:
+
+	alter table user2 drop foreign key user2_ibfk_1; #删除user2表上的名称为'user2_ibfk_1'的外键，外键名称可通过`SHOW CREATE TABLE table_name`查看。
+	alter table user2 drop index pid; #删除创建外键约束时自动创建的索引。
+
+#### 修改列定义
+
+	ALTER TABLE tbl_name MODIFY [COLUMN] col_name column_definition [FIRST | AFTER col_name]
 
 
